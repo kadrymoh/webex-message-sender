@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Webex OAuth Login</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 400px;
+    margin: 100px auto;
+    background-color: #f9f9f9;
+    padding: 40px 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 14px rgba(0,0,0,0.1);
+    color: #333;
+    text-align: center;
+  }
+
+  h1 {
+    color: #0052cc;
+    margin-bottom: 40px;
+  }
+
+  button {
+    padding: 15px 30px;
+    font-size: 20px;
+    background-color: #0052cc;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #003d99;
+  }
+</style>
+</head>
+<body>
+
+<h1>Welcome to Webex Message Sender</h1>
+
+<button onclick="login()">Login with Webex</button>
+
+<script>
+  function login() {
+    window.location.href = "/login";
+  }
+</script>
+
+</body>
+</html>
