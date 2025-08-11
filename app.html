@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Send Message - Webex</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 40px auto;
+    background-color: #f9f9f9;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    color: #333;
+  }
+
+  h2 {
+    text-align: center;
+    color: #0052cc;
+  }
+
+  label {
+    font-weight: bold;
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    font-size: 16px;
+  }
+
+  select, input[type="text"] {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1.5px solid #ccc;
+    transition: border-color 0.3s ease;
+  }
+
+  select:focus, input[type="text"]:focus {
+    border-color: #0052cc;
+    outline: none;
+  }
+
+  button {
+    margin-top: 30px;
+    padding: 12px 20px;
+    font-size: 18px;
+    background-color: #0052cc;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #003d99;
+  }
+
+  #status {
+    margin-top: 25px;
+    font-weight: bold;
+    text-align: center;
+    min-height: 24px;
+  }
+</style>
+</head>
+<body>
+
+<h2>Send Message to a Webex Room</h2>
+
+<label for="roomsSelect">Select a Room:</label>
+<select id="roomsSelect"></select>
+
+<label for="messageInput">Message:</label>
+<input type="text" id="messageInput" placeholder="Type your message here" />
+
+<button onclick="sendMessage()">Send Message</button>
+
+<div id="status"></div>
+
+<script>
+  const roomsSelect = document.getElementById("roomsSelect");
+  const statusDiv = document.getElementById("status");
+
+  async function loadRooms() {
+    statusDiv.textContent = "Loading rooms...";
+    try {
+      const res = await fetch("/api/rooms");
+      if (!res.ok) throw new Error("Failed to load rooms");
+      const data = await res.json();
+      roomsSelect.innerHTML = "";
+      data.items.forEach(room => {
+        const opt = document.createElement("option");
+        opt.value = room.id;
+        opt.textContent = room.title || "(No Title)";
+        roomsSelect.appendChild(opt);
+      });
+      statusDiv.textContent = "Rooms loaded.";
+    } catch (e) {
+      statusDiv.textContent = "Error loading rooms: " + e.message;
+    }
+  }
+
+  async function sendMessage() {
+    const roomId = roomsSelect.value;
+    const text = document.getElementById("messageInput").value.trim();
+    if (!roomId) {
+      statusDiv.textContent = "Please select a room.";
+      return;
+    }
+    if (!text) {
+      statusDiv.textContent = "Please enter a message.";
+      return;
+    }
+
+    statusDiv.textContent = "Sending message...";
+    try {
+      const res = await fetch("/api/send_message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roomId, text })
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to send message");
+      }
+      statusDiv.textContent = "Message sent successfully!";
+      document.getElementById("messageInput").value = "";
+    } catch (e) {
+      statusDiv.textContent = "Error sending message: " + e.message;
+    }
+  }
+
+  window.onload = loadRooms;
+</script>
+
+</body>
+</html>
